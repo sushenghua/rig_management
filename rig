@@ -46,7 +46,7 @@ def read_sht3x(addr, clk_stretch=False):
         i2c_bus.write_i2c_block_data(addr, SHT3x_CLK_STRETCH_ENABLED, [SHT3x_REPEATABILITY_HIGH_CSE])
     else:
         i2c_bus.write_i2c_block_data(addr, SHT3x_CLK_STRETCH_DISABLED, [SHT3x_REPEATABILITY_HIGH_CSD])
-    time.sleep(0.5)
+    time.sleep(0.3)
     # read data back from 0x00(00), 6 bytes
     # Temp MSB, Temp LSB, Temp CRC, Humididty MSB, Humidity LSB, Humidity CRC
     data = i2c_bus.read_i2c_block_data(addr, 0x00, 6)
