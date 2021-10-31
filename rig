@@ -9,14 +9,17 @@ import sys
 # --------- pin numbers
 # --- usb
 usb_pin = 4
-# --- power
-power_pin = 18
-
+# --- power button
+power_button_pin = 18
+# --- power status
+power_status_pin = 23
 
 # --------- hardware setup
 # --- gpio
 pi = pigpio.pi()
 pi.set_mode(usb_pin, pigpio.OUTPUT)
+pi.set_mode(power_button_pin, pigpio.OUTPUT)
+pi.set_mode(power_status_pin, pigpio.INPUT)
 # --- I2C bus
 I2C_BUS_CHANNEL = 1
 i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
@@ -66,6 +69,9 @@ parser.add_argument('-u', '--usb', type=str, help=usb_arghelp)
 # --- power switch
 power_arghelp = 'power toggle or long press, valid value: "toggle", "longpress"'
 parser.add_argument('-p', '--power', type=str, help=power_arghelp)
+# --- power status
+powerstatus_arghelp = 'read power status, power status is either "on" or "off"'
+parser.add_argument('-ps', '--powerstatus', help=powerstatus_arghelp)
 # --- temperature and humidity
 temp_humid_arghelp = 'obtain temperature and humidity value from SHT3x sensor'
 parser.add_argument('-th', '--temphumid', help=temp_humid_arghelp)
@@ -86,15 +92,18 @@ else:
             print(usb_arghelp)
     if args.power:
         if args.power == 'toggle':
-            pi.write(power_pin, True)
+            pi.write(power_button_pin, True)
             time.sleep(0.2)
-            pi.write(power_pin, False)
+            pi.write(power_button_pin, False)
         elif args.power == 'longpress':
-            pi.write(power_pin, True)
+            pi.write(power_button_pin, True)
             time.sleep(6)
-            pi.write(power_pin, False)
+            pi.write(power_button_pin, False)
         else:
             print(power_arghelp)
+    if args.powerstatus:
+        ison = pi.read(power_status_pin)
+        print('power: %s'%('on' if ison else 'off'))
     if args.temphumid:
         _, _, _, result_str = read_sht3x(SHT3x_1_ADDR)
         print(result_str)
