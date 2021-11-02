@@ -13,12 +13,15 @@ usb_pin = 4
 power_button_pin = 18
 # --- power status
 power_status_pin = 23
+# --- PM sensor set pin(3.3v working status, low level sleep mode)
+pm_sensor_set_pin = 12
 
 # --------- hardware setup
 # --- gpio
 pi = pigpio.pi()
 pi.set_mode(usb_pin, pigpio.OUTPUT)
 pi.set_mode(power_button_pin, pigpio.OUTPUT)
+pi.set_mode(pm_sensor_set_pin, pigpio.OUTPUT)
 pi.set_mode(power_status_pin, pigpio.INPUT)
 # --- I2C bus
 I2C_BUS_CHANNEL = 1
@@ -69,6 +72,9 @@ parser.add_argument('-u', '--usb', type=str, help=usb_arghelp)
 # --- power switch
 power_arghelp = 'power toggle or long press, valid value: "toggle", "longpress"'
 parser.add_argument('-p', '--power', type=str, help=power_arghelp)
+# --- PM sensor set wake/sleep
+pm_sensor_set_arghelp = 'PM sensor wake/sleep, valid value: "wake", "sleep"'
+parser.add_argument('-pm', '--pmsensor', type=str, help=pm_sensor_set_arghelp)
 # --- power status
 powerstatus_arghelp = 'read power status, power status is either "on" or "off"'
 parser.add_argument('-ps', '--powerstatus', help=powerstatus_arghelp)
@@ -101,6 +107,13 @@ else:
             pi.write(power_button_pin, False)
         else:
             print(power_arghelp)
+    if args.pmsensor:
+        if args.pmsensor == 'wake':
+            pi.write(pm_sensor_set_pin, True)
+        elif args.pmsensor == 'sleep':
+            pi.write(pm_sensor_set_pin, False)
+        else:
+            print(pm_sensor_set_arghelp)
     if args.powerstatus:
         ison = pi.read(power_status_pin)
         print('power: %s'%('on' if ison else 'off'))
