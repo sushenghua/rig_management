@@ -1,70 +1,15 @@
 #!/usr/bin/env python3
 
-import pigpio
-import smbus2
-import time
+import gpio_control as control
+import sht3x_sensor as sht3x
+import pm_sensor as pm
+
 import argparse
 import sys
 
-# --------- pin numbers
-# --- usb
-usb_pin = 4
-# --- power button
-power_button_pin = 18
-# --- power status
-power_status_pin = 23
-# --- PM sensor set pin(3.3v working status, low level sleep mode)
-pm_sensor_set_pin = 12
 
-# --------- hardware setup
-# --- gpio
-pi = pigpio.pi()
-pi.set_mode(usb_pin, pigpio.OUTPUT)
-pi.set_mode(power_button_pin, pigpio.OUTPUT)
-pi.set_mode(pm_sensor_set_pin, pigpio.OUTPUT)
-pi.set_mode(power_status_pin, pigpio.INPUT)
-# --- I2C bus
-I2C_BUS_CHANNEL = 1
-i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
-# --- SHT3x sensor1
-SHT3x_1_ADDR = 0x44
-
-
-# --------- help methods
-# ------ SHT3x command
-# --- MSB bits
-SHT3x_CLK_STRETCH_ENABLED       = 0x2C
-SHT3x_CLK_STRETCH_DISABLED      = 0x24
-# --- LSB bits
-SHT3x_REPEATABILITY_HIGH_CSE    = 0x06 # CSE: CLK STRETCH ENABLED
-SHT3x_REPEATABILITY_MEDIUM_CSE  = 0x0D
-SHT3x_REPEATABILITY_LOW_CSE     = 0x10
-SHT3x_REPEATABILITY_HIGH_CSD    = 0x00 # CSD: CLK STRETCH DISABLED
-SHT3x_REPEATABILITY_MEDIUM_CSD  = 0x0B
-SHT3x_REPEATABILITY_LOW_CSD     = 0x16
-
-# ------ methods
-def read_sht3x(addr, clk_stretch=False):
-    if clk_stretch:
-        i2c_bus.write_i2c_block_data(addr, SHT3x_CLK_STRETCH_ENABLED, [SHT3x_REPEATABILITY_HIGH_CSE])
-    else:
-        i2c_bus.write_i2c_block_data(addr, SHT3x_CLK_STRETCH_DISABLED, [SHT3x_REPEATABILITY_HIGH_CSD])
-    time.sleep(0.3)
-    # read data back from 0x00(00), 6 bytes
-    # Temp MSB, Temp LSB, Temp CRC, Humididty MSB, Humidity LSB, Humidity CRC
-    data = i2c_bus.read_i2c_block_data(addr, 0x00, 6)
-    # Convert the data
-    temp = data[0] * 256 + data[1]
-    cTemp = -45 + (175 * temp / 65535.0)
-    fTemp = -49 + (315 * temp / 65535.0)
-    humidity = 100 * (data[3] * 256 + data[4]) / 65535.0
-    result_str = ''.join(['temperature: %.2f C' % cTemp, \
-                          ' (%.2f F)' % fTemp, \
-                          ', humidity: %.2f%%' % humidity])
-    return (cTemp, fTemp, humidity, result_str)
-
-
-# --------- arguments
+#--------------------------------------------------------------------
+# ------------------ arguments
 parser = argparse.ArgumentParser()
 # --- usb switch
 usb_arghelp = 'usb on/off, valid value: "on" or "off"'
@@ -73,7 +18,7 @@ parser.add_argument('-u', '--usb', type=str, help=usb_arghelp)
 power_arghelp = 'power toggle or long press, valid value: "toggle", "longpress"'
 parser.add_argument('-p', '--power', type=str, help=power_arghelp)
 # --- PM sensor set wake/sleep
-pm_sensor_set_arghelp = 'PM sensor wake/sleep, valid value: "wake", "sleep"'
+pm_sensor_set_arghelp = 'PM sensor wake/sleep/read, valid value: "wakeup", "sleep", "reset", "read"'
 parser.add_argument('-pm', '--pmsensor', type=str, help=pm_sensor_set_arghelp)
 # --- power status
 powerstatus_arghelp = 'read power status, power status is either "on" or "off"'
@@ -85,40 +30,41 @@ parser.add_argument('-th', '--temphumid', help=temp_humid_arghelp)
 args = parser.parse_args()
 
 
-# --------- app logic
+#--------------------------------------------------------------------
+# ------------------ app logic
 if len(sys.argv) == 1:
-    parser.print_help()
+  parser.print_help()
 else:
-    if args.usb:
-        if args.usb == 'on':
-            pi.write(usb_pin, True)
-        elif args.usb == 'off':
-            pi.write(usb_pin, False)
-        else:
-            print(usb_arghelp)
-    if args.power:
-        if args.power == 'toggle':
-            pi.write(power_button_pin, True)
-            time.sleep(0.2)
-            pi.write(power_button_pin, False)
-        elif args.power == 'longpress':
-            pi.write(power_button_pin, True)
-            time.sleep(6)
-            pi.write(power_button_pin, False)
-        else:
-            print(power_arghelp)
-    if args.pmsensor:
-        if args.pmsensor == 'wake':
-            pi.write(pm_sensor_set_pin, True)
-        elif args.pmsensor == 'sleep':
-            pi.write(pm_sensor_set_pin, False)
-        else:
-            print(pm_sensor_set_arghelp)
-    if args.powerstatus:
-        ison = pi.read(power_status_pin)
-        print('power: %s'%('on' if ison else 'off'))
-    if args.temphumid:
-        _, _, _, result_str = read_sht3x(SHT3x_1_ADDR)
-        print(result_str)
-
-
+  if args.usb:
+    if args.usb == 'on':
+      control.set_usb_enabled(True)
+    elif args.usb == 'off':
+      control.set_usb_enabled(False)
+    else:
+      print(usb_arghelp)
+  if args.power:
+    if args.power == 'toggle':
+      control.power_toggle()
+    elif args.power == 'longpress':
+      control.power_longpress()
+    else:
+      print(power_arghelp)
+  if args.pmsensor:
+    if args.pmsensor == 'wakeup':
+      control.pm_sensor_set_wakeup(True)
+    elif args.pmsensor == 'sleep':
+      control.pm_sensor_set_wakeup(False)
+    elif args.pmsensor == 'reset':
+      control.pm_sensor_reset()
+    elif args.pmsensor == 'read':
+      pms = pm.PMSensor.instance()
+      data = pms.read()
+      print(data)
+    else:
+      print(pm_sensor_set_arghelp)
+  if args.powerstatus:
+    _, s = control.read_power_status()
+    print(s)
+  if args.temphumid:
+    _, _, _, result_str = sht3x.read_upstream()
+    print(result_str)
