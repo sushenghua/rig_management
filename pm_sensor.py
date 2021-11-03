@@ -51,16 +51,16 @@ class PMSensorData():
     return """
       PM1.0 ug/m3 (ultrafine particles):                             {}
       PM2.5 ug/m3 (combustion particles, organic compounds, metals): {}
-      PM10 ug/m3  (dust, pollen, mould spores):                      {}
+      PM10  ug/m3  (dust, pollen, mould spores):                     {}
       PM1.0 ug/m3 (atmos env):                                       {}
       PM2.5 ug/m3 (atmos env):                                       {}
-      PM10 ug/m3 (atmos env):                                        {}
-      > 0.3um in 100mL air:                                          {}
-      > 0.5um in 100mL air:                                          {}
-      > 1.0um in 100mL air:                                          {}
+      PM10  ug/m3 (atmos env):                                       {}
+      > 0.3um in 100ml air:                                          {}
+      > 0.5um in 100ml air:                                          {}
+      > 1.0um in 100ml air:                                          {}
       > 2.5um in 100mL air:                                          {}
-      > 5.0um in 100mL air:                                          {}
-      >10.0um in 100mL air:                                          {}
+      > 5.0um in 100ml air:                                          {}
+      >10.0um in 100ml air:                                          {}
       """.format(*self.data[:])
 
   def __str__(self):
