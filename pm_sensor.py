@@ -51,7 +51,7 @@ class PMSensorData():
     return """
       PM1.0 ug/m3 (ultrafine particles):                             {}
       PM2.5 ug/m3 (combustion particles, organic compounds, metals): {}
-      PM10  ug/m3  (dust, pollen, mould spores):                     {}
+      PM10  ug/m3 (dust, pollen, mould spores):                      {}
       PM1.0 ug/m3 (atmos env):                                       {}
       PM2.5 ug/m3 (atmos env):                                       {}
       PM10  ug/m3 (atmos env):                                       {}
