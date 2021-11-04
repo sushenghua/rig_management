@@ -11,21 +11,26 @@ import sys
 #--------------------------------------------------------------------
 # ------------------ arguments
 parser = argparse.ArgumentParser()
-# --- usb switch
+# --- usb plug
 usb_arghelp = 'usb on/off, valid value: "on" or "off"'
 parser.add_argument('-u', '--usb', type=str, help=usb_arghelp)
+
 # --- power switch
 power_arghelp = 'power toggle or long press, valid value: "toggle", "longpress"'
 parser.add_argument('-p', '--power', type=str, help=power_arghelp)
+
 # --- PM sensor set wake/sleep
 pm_sensor_set_arghelp = 'PM sensor wake/sleep/read, valid value: "wakeup", "sleep", "reset", "read"'
 parser.add_argument('-pm', '--pmsensor', type=str, help=pm_sensor_set_arghelp)
+
 # --- power status
-powerstatus_arghelp = 'read power status, power status is either "on" or "off"'
+powerstatus_arghelp = 'read power status, valid value: "read" (it returns either "on" or "off")'
 parser.add_argument('-ps', '--powerstatus', help=powerstatus_arghelp)
+
 # --- temperature and humidity
-temp_humid_arghelp = 'obtain temperature and humidity value from SHT3x sensor'
+temp_humid_arghelp = 'read temperature and humidity, valid value: "read"'
 parser.add_argument('-th', '--temphumid', help=temp_humid_arghelp)
+
 # --- parse args
 args = parser.parse_args()
 
@@ -34,7 +39,9 @@ args = parser.parse_args()
 # ------------------ app logic
 if len(sys.argv) == 1:
   parser.print_help()
+
 else:
+  # ------ usb plug control
   if args.usb:
     if args.usb == 'on':
       control.set_usb_enabled(True)
@@ -42,6 +49,16 @@ else:
       control.set_usb_enabled(False)
     else:
       print(usb_arghelp)
+
+  # ------ power status
+  if args.powerstatus:
+    if args.powerstatus == 'read':
+      _, s = control.read_power_status()
+      print(s)
+    else:
+      print(powerstatus_arghelp)
+
+  # ------ power control
   if args.power:
     if args.power == 'toggle':
       control.power_toggle()
@@ -49,6 +66,8 @@ else:
       control.power_longpress()
     else:
       print(power_arghelp)
+
+  # ------ PM sensor control
   if args.pmsensor:
     if args.pmsensor == 'wakeup':
       control.pm_sensor_set_wakeup(True)
@@ -62,9 +81,11 @@ else:
       print(data)
     else:
       print(pm_sensor_set_arghelp)
-  if args.powerstatus:
-    _, s = control.read_power_status()
-    print(s)
+
+  # ------ temperature humidity sensor control
   if args.temphumid:
-    _, _, _, result_str = sht3x.read_upstream()
-    print(result_str)
+    if args.temphumid == 'read':
+      _, _, _, result_str = sht3x.read_upstream()
+      print(result_str)
+    else:
+      print(temp_humid_arghelp)

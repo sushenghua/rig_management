@@ -22,7 +22,8 @@ def set_usb_enabled(enabled:bool):
 
 def read_power_status():
     ison = pi.read(PIN.POWER_STATUS)
-    result_str = 'power: %s'%('on' if ison else 'off')
+    # result_str = 'power: %s'%('on' if ison else 'off')
+    result_str = 'on' if ison else 'off'
     return ison, result_str
 
 def power_toggle():
