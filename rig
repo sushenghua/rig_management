@@ -85,7 +85,7 @@ else:
   # ------ temperature humidity sensor control
   if args.temphumid:
     if args.temphumid == 'read':
-      _, _, _, result_str = sht3x.read_upstream()
+      result_str = sht3x.read_all()
       print(result_str)
     else:
       print(temp_humid_arghelp)
