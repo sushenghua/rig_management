@@ -92,6 +92,9 @@ PM_DATA_FRAME_LEN = 32
 SERIAL_PORT = '/dev/ttyS0'
 BAUDRATE = 9600
 
+# --- timeout value
+READ_TIMEOUT = 6
+
 class PMSensor():
 
   __instance = None
@@ -169,7 +172,7 @@ class PMSensor():
     while True:
       # ------ check timeout
       elapsed = time.time() - start_time
-      if elapsed > 5:
+      if elapsed > READ_TIMEOUT:
         raise PMFrameDataReadTimeoutError('PM sensor frame data read timeout: no valid frame packet found')
 
       # ------ check available bytes
@@ -177,7 +180,7 @@ class PMSensor():
       # --- drop incomplete frame packet
       if available_count < PM_DATA_FRAME_LEN:
         count, data = self._serial_read(available_count)
-        time.sleep(0.2)
+        time.sleep(0.1)
         continue
 
       # ------ read and parse the intact frame packet
