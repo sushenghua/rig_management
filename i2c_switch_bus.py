@@ -30,7 +30,7 @@ SWITCH_SET_CHANNEL_WAIT_TIME  = 0.01
 
 class I2CSwitchBus():
   def __init__(self):
-    # switch_reset()
+    self.switch_reset()
     self._recent_channel_bitmask = 0x00
     i2c_bus.write_byte(SWITCH_ADDRESS, 0x00)
     time.sleep(SWITCH_SET_CHANNEL_WAIT_TIME)
