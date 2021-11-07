@@ -88,6 +88,13 @@ pi = PiGpio.instance().pi()
 PM_DATA_FRAME_HEAD = bytearray(b'\x42\x4d')
 PM_DATA_FRAME_LEN = 32
 
+# --- PMS5003 CMD
+PASSIVE_READ            = b'\x42\x4d\xe2\x00\x00\x01\x71'
+SWITCH_TO_PASSIVE_MODE  = b'\x42\x4d\xe1\x00\x00\x01\x70'
+SWITCH_TO_ACTIVE_MDOE   = b'\x42\x4d\xe1\x00\x01\x01\x71'
+SWITCH_TO_STANDBY_MODE  = b'\x42\x4d\xe4\x00\x00\x01\x73'
+SWITCH_TO_NORMAL_MODE   = b'\x42\x4d\xe4\x00\x01\x01\x71'
+
 # --- serial port
 SERIAL_PORT = '/dev/ttyS0'
 BAUDRATE = 9600
@@ -122,9 +129,12 @@ class PMSensor():
     pi.set_mode(self._pin_reset, PiGpio.OUTPUT)
 
     self._serial_open()
+    # self._run_mode = ''
+    # self._read_mode = ''
 
     self.wakeup()
     # self.reset()
+    # self.set_passive_read_mode()
 
   def wakeup(self):
     pi.write(self._pin_set, PiGpio.LEVEL_HIGH)
@@ -134,6 +144,25 @@ class PMSensor():
     pi.write(self._pin_reset, PiGpio.LEVEL_LOW)
     time.sleep(0.1)
     pi.write(self._pin_reset, PiGpio.LEVEL_HIGH)
+
+  def set_active_read_mode(self):
+    self._set_read_mode('active_mode')
+
+  def set_passive_read_mode(self):
+    self._set_read_mode('passive_mode')
+
+  def passive_read(self):
+    ret = None
+    try:
+      self._serial_write(PASSIVE_READ)
+      ret = self._read()
+    except Exception as e:
+      print(e)
+    else:
+      pass
+    finally:
+      self._serial_close()
+      return ret
 
   def read(self):
     ret = None
@@ -162,8 +191,43 @@ class PMSensor():
     b, d = pi.serial_read(self._serial, count)
     return b, d
 
+  def _serial_write(self, data):
+    pi.serial_write(self._serial, data)
+
   def _serial_flush_input(self):
     pass
+
+  def _set_run_mode(self, mode):
+    if mode == 'standby_mode':
+      self._serial_write(SWITCH_TO_STANDBY_MODE)
+    elif mode == 'normal_mode':
+      self._serial_write(SWITCH_TO_NORMAL_MODE)
+    else:
+      pass
+    # if mode != self._run_mode:
+    #   if mode == 'standby_mode':
+    #     self._serial_write(SWITCH_TO_STANDBY_MODE)
+    #   elif mode == 'normal_mode':
+    #     self._serial_write(SWITCH_TO_NORMAL_MODE)
+    #   else:
+    #     pass
+    #   self._run_mode = mode
+
+  def _set_read_mode(self, mode):
+    if mode == 'active_mode':
+      self._serial_write(SWITCH_TO_ACTIVE_MDOE)
+    elif mode == 'passive_mode':
+      self._serial_write(SWITCH_TO_PASSIVE_MODE)
+    else:
+      pass
+    # if mode != self._read_mode:
+    #   if mode == 'active_mode':
+    #     self._serial_write(SWITCH_TO_ACTIVE_MDOE)
+    #   elif mode == 'passive_mode':
+    #     self._serial_write(SWITCH_TO_PASSIVE_MODE)
+    #   else:
+    #     pass
+    #   self._read_mode = mode
 
   def _read(self):
 

@@ -21,7 +21,8 @@ power_arghelp = 'power toggle or long press, valid value: "toggle", "longpress"'
 parser.add_argument('-p', '--power', type=str, help=power_arghelp)
 
 # --- PM sensor set wake/sleep
-pm_sensor_set_arghelp = 'PM sensor wake/sleep/read, valid value: "wakeup", "sleep", "reset", "read"'
+pm_sensor_set_arghelp = 'PM sensor wake/sleep/read, valid value: "wakeup", "sleep", ' + \
+                        '"reset", "read", "pread", "active-mode", "passive-mode"'
 parser.add_argument('-pm', '--pmsensor', type=str, help=pm_sensor_set_arghelp)
 
 # --- power status
@@ -80,6 +81,16 @@ else:
       pms = pm.PMSensor.instance()
       data = pms.read()
       print(data)
+    elif args.pmsensor == 'pread':
+      pms = pm.PMSensor.instance()
+      data = pms.passive_read()
+      print(data)
+    elif args.pmsensor == 'active-mode':
+      pms = pm.PMSensor.instance()
+      pms.set_active_read_mode()
+    elif args.pmsensor == 'passive-mode':
+      pms = pm.PMSensor.instance()
+      pms.set_passive_read_mode()
     else:
       print(pm_sensor_set_arghelp)
 
