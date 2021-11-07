@@ -3,6 +3,7 @@
 import gpio_control as control
 import sht3x_sensor as sht3x
 import pm_sensor as pm
+import pwr_light_sensor as pwrlight
 
 import argparse
 import sys
@@ -53,7 +54,7 @@ else:
   # ------ power status
   if args.powerstatus:
     if args.powerstatus == 'read':
-      _, s = control.read_power_status()
+      _, s = pwrlight.read_light()
       print(s)
     else:
       print(powerstatus_arghelp)

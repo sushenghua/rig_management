@@ -7,7 +7,7 @@ import time
 # ------------------ hardware setup
 # --- gpio
 pi = PiGpio.instance().pi()
-pi.set_mode(PIN.POWER_STATUS, PiGpio.INPUT)
+# pi.set_mode(PIN.POWER_STATUS, PiGpio.INPUT)
 pi.set_mode(PIN.USB_PLUG, PiGpio.OUTPUT)
 pi.set_mode(PIN.POWER_BUTTON, PiGpio.OUTPUT)
 pi.set_mode(PIN.PM_SENSOR_SET, PiGpio.OUTPUT)
@@ -20,11 +20,11 @@ def set_usb_enabled(enabled:bool):
   level = PiGpio.LEVEL_HIGH if enabled else PiGpio.LEVEL_LOW
   pi.write(PIN.USB_PLUG, level)
 
-def read_power_status():
-    ison = pi.read(PIN.POWER_STATUS)
-    # result_str = 'power: %s'%('on' if ison else 'off')
-    result_str = 'on' if ison else 'off'
-    return ison, result_str
+# def read_power_status():
+#     ison = pi.read(PIN.POWER_STATUS)
+#     # result_str = 'power: %s'%('on' if ison else 'off')
+#     result_str = 'on' if ison else 'off'
+#     return ison, result_str
 
 def power_toggle():
   pi.write(PIN.POWER_BUTTON, PiGpio.LEVEL_HIGH)

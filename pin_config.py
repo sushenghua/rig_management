@@ -7,8 +7,8 @@ USB_PLUG                 = 4
 # --- power button
 POWER_BUTTON            = 18
 
-# --- power status
-POWER_STATUS            = 23
+# # --- power status
+# POWER_STATUS            = 23
 
 # --- i2c switch(TCA9548A)
 I2C_SWITCH_RESET        = 24
