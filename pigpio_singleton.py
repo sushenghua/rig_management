@@ -7,6 +7,8 @@ class PiGpio:
   LEVEL_HIGH = 1
   INPUT = pigpio.INPUT
   OUTPUT = pigpio.OUTPUT
+  PULLUP = pigpio.PUD_UP
+  PULLDOWN = pigpio.PUD_DOWN
 
   __instance = None
 

@@ -4,6 +4,7 @@ import gpio_control as control
 import sht3x_sensor as sht3x
 import pm_sensor as pm
 import pwr_light_sensor as pwrlight
+from i2c_switch_bus import I2CSwitchBus
 
 import argparse
 import sys
@@ -32,6 +33,14 @@ parser.add_argument('-ps', '--powerstatus', help=powerstatus_arghelp)
 # --- temperature and humidity
 temp_humid_arghelp = 'read temperature and humidity, valid value: "read"'
 parser.add_argument('-th', '--temphumid', help=temp_humid_arghelp)
+
+# --- fan pwm
+fan_pwm_arghelp = 'set fan speed by pwm percentage value, valid value: percentage value in range [0, 100]'
+parser.add_argument('-fp', '--fanpwm', type=int, help=fan_pwm_arghelp)
+
+# --- i2c bus
+i2c_bus_arghelp = 'i2c bus operation, valid value: reset'
+parser.add_argument('-ib', '--i2cbus', type=str, help=i2c_bus_arghelp)
 
 # --- parse args
 args = parser.parse_args()
@@ -101,3 +110,18 @@ else:
       print(result_str)
     else:
       print(temp_humid_arghelp)
+
+  # ------ fan pwm
+  if args.fanpwm:
+    if args.fanpwm >= 0 and args.fanpwm <=100:
+      control.set_pwm(args.fanpwm/100.0)
+    else:
+      print(fan_pwm_arghelp)
+
+  # ------ i2c bus
+  if args.i2cbus:
+    if args.i2cbus == 'reset':
+      i2c_bus = I2CSwitchBus()
+      i2c_bus.switch_reset()
+    else:
+      print(i2c_bus_arghelp)
