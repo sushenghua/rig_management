@@ -22,7 +22,7 @@ i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
 #     0x14: third channle, fifth channel 'on', all rest 'off'
 SWITCH_ADDRESS                = 0x70
 SWITCH_CHANNEL_COUNT          = 8
-SWITCH_SET_CHANNEL_WAIT_TIME  = 0.01
+SWITCH_SET_CHANNEL_WAIT_TIME  = 0.03
 
 
 #--------------------------------------------------------------------
