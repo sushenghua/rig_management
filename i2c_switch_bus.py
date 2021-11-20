@@ -22,7 +22,7 @@ i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
 #     0x14: third channle, fifth channel 'on', all rest 'off'
 SWITCH_ADDRESS                = 0x70
 SWITCH_CHANNEL_COUNT          = 8
-SWITCH_SET_CHANNEL_WAIT_TIME  = 0.03
+SWITCH_SET_CHANNEL_WAIT_TIME  = 0.02
 
 
 #--------------------------------------------------------------------
@@ -81,6 +81,14 @@ class I2CSwitchBus():
   def fulladdress_write_block(self, fulladdress, register, block):
     self.set_switch_bitwise_channel(fulladdress >> 8)
     i2c_bus.write_i2c_block_data(fulladdress & 0xFF, register, block)
+
+  def fulladdress_byte_process_call(self, fulladdress, register, value):
+    self.set_switch_bitwise_channel(fulladdress >> 8)
+    return i2c_bus.process_call(fulladdress & 0xFF, register, value)
+
+  def fulladdress_block_process_call(self, fulladdress, register, block):
+    self.set_switch_bitwise_channel(fulladdress >> 8)
+    return i2c_bus.block_process_call(fulladdress & 0xFF, register, block)
 
   # --- reset switch
   def switch_reset(self):

@@ -29,20 +29,29 @@ SHT3x_REPEATABILITY_LOW_CSD     = 0x16
 
 
 #--------------------------------------------------------------------
+# ------------------ constants
+INVALID_VAL = -999
+
+
+#--------------------------------------------------------------------
 # ------------------ methods
 def read_sht3x(addr, clk_stretch=False):
   if clk_stretch:
-    i2c_switch_bus.fulladdress_write_block(addr, SHT3x_CLK_STRETCH_ENABLED, [SHT3x_REPEATABILITY_HIGH_CSE])
+    # i2c_switch_bus.fulladdress_write_block(addr, SHT3x_CLK_STRETCH_ENABLED, [SHT3x_REPEATABILITY_HIGH_CSE])
+    i2c_switch_bus.fulladdress_write_byte(addr, SHT3x_CLK_STRETCH_ENABLED, SHT3x_REPEATABILITY_HIGH_CSE)
   else:
-    i2c_switch_bus.fulladdress_write_block(addr, SHT3x_CLK_STRETCH_DISABLED, [SHT3x_REPEATABILITY_HIGH_CSD])
+    # i2c_switch_bus.fulladdress_write_block(addr, SHT3x_CLK_STRETCH_DISABLED, [SHT3x_REPEATABILITY_HIGH_CSD])
+    i2c_switch_bus.fulladdress_write_byte(addr, SHT3x_CLK_STRETCH_DISABLED, SHT3x_REPEATABILITY_HIGH_CSD)
   time.sleep(SHT3X_RESPONSE_WAIT_TIME)
   # read data back from 0x00(00), 6 bytes
   # Temp MSB, Temp LSB, Temp CRC, Humididty MSB, Humidity LSB, Humidity CRC
   data = i2c_switch_bus.fulladdress_read_block(addr, 0x00, 6)
+  # data = i2c_switch_bus.fulladdress_block_process_call(addr, SHT3x_CLK_STRETCH_DISABLED,
+  #                                                      [SHT3x_REPEATABILITY_HIGH_CSD])
   # Convert the data
   temp = data[0] * 256 + data[1]
   cTemp = -45 + (175 * temp / 65535.0)
-  fTemp = -49 + (315 * temp / 65535.0)
+  fTemp = -49 + (347 * temp / 65535.0)  # -49 + (315 * temp / 65535.0)
   humidity = 100 * (data[3] * 256 + data[4]) / 65535.0
   result_str = ''.join(['temperature: %.2f C' % cTemp, \
                 ' (%.2f F)' % fTemp, \
@@ -60,3 +69,18 @@ def read_all():
   _,_,_, down = read_sht3x(SHT3x_2_ADDR)
   return ''.join(['[up stream]  ', up, '\n',
                   '[down strem] ', down])
+
+def read_dict_data():
+  t1, _, h1, _ = read_upstream()
+  t2, _, h2, _ = read_downstream()
+  th = {
+    'up':   {'t': t1, 'h': h1},
+    'down': {'t': t2, 'h': h2}
+  }
+  return th
+
+def invalid_dict_data():
+  return {
+    'up':   {'t': INVALID_VAL, 'h': INVALID_VAL},
+    'down': {'t': INVALID_VAL, 'h': INVALID_VAL}
+  }

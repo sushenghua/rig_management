@@ -17,6 +17,10 @@ TSL2561_RESPONSE_WAIT_TIME  = 0.05
 # ------------------ TSL2561 command
 
 
+#--------------------------------------------------------------------
+# ------------------ constants
+INVALID_VAL = -999
+
 
 #--------------------------------------------------------------------
 # ------------------ methods
@@ -45,3 +49,9 @@ def read_light():
   ison = read_tsl2561(TSL2561_3_ADDR)
   result_str = 'on' if ison else 'off'
   return ison, result_str
+
+def ison():
+  return read_tsl2561(TSL2561_3_ADDR)
+
+def invalid_status():
+  return INVALID_VAL

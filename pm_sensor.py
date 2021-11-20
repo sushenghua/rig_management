@@ -47,6 +47,23 @@ class PMSensorData():
 
     raise ValueError("Particle size {} measurement not available.".format(size))
 
+  def dict_data(self):
+    return {
+      'ugpm3': {    # ugpm3: pm_ug_per_m3
+        '1d0': self.data[0],
+        '2d5': self.data[1],
+        '10d': self.data[2]
+      },
+      'ctp100': {   # ctp100: above_um_count_per_100ml_air
+        '0d3': self.data[6],
+        '0d5': self.data[7],
+        '1d0': self.data[8],
+        '2d5': self.data[9],
+        '5d0': self.data[10],
+        '10d': self.data[11]
+      }
+    }
+
   def __repr__(self):
     return """
       PM1.0 ug/m3 (ultrafine particles):                             {}
@@ -65,6 +82,27 @@ class PMSensorData():
 
   def __str__(self):
     return self.__repr__()
+
+
+#--------------------------------------------------------------------
+# ------------------ invalid pm data
+INVALID_VAL = -999
+def invalid_pm_dict_data():
+  return {
+    'ugpm3': {    # ugpm3: pm_ug_per_m3
+      '1d0': INVALID_VAL,
+      '2d5': INVALID_VAL,
+      '10d': INVALID_VAL
+    },
+    'ctp100': {   # ctp100: above_um_count_per_100ml_air
+      '0d3': INVALID_VAL,
+      '0d5': INVALID_VAL,
+      '1d0': INVALID_VAL,
+      '2d5': INVALID_VAL,
+      '5d0': INVALID_VAL,
+      '10d': INVALID_VAL
+    }
+  }
 
 
 #--------------------------------------------------------------------
