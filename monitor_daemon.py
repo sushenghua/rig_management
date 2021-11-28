@@ -36,7 +36,7 @@ GPU_STD = {
   'RTX 3060': {
     'hashrate_avr': 34000000,
     'hashrate_low': 20000000,
-    'temp_high':    50 
+    'temp_high':    70
   },
   'RTX 3070': {
     'hashrate_avr': 44000000,

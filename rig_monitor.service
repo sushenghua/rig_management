@@ -1,0 +1,13 @@
+[Unit]
+Description=Rig Monitor Service
+After=riginit.service
+
+[Service]
+User=ubuntu
+
+ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/monitor_daemon.py > /home/ubuntu/service/rig/rig_monitor.log 2>&1
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
