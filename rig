@@ -125,7 +125,6 @@ else:
     else:
       print(fan_pwm_arghelp)
 
-
   # ------ i2c bus
   if args.i2cbus:
     if args.i2cbus == 'reset':

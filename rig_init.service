@@ -11,7 +11,7 @@ ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/rig_init.py > /home/ubuntu/s
 #ExecStartPost=/bin/sleep 0.3
 #ExecStartPost=/usr/bin/python3 /home/ubuntu/service/rig -pm reset
 #ExecStartPost=/bin/sleep 0.3
-#ExecStartPost=/usr/bin/python3 /home/ubuntu/service/rig -fp 32
+#ExecStartPost=/usr/bin/python3 /home/ubuntu/service/rig -fp1 32
 
 Restart=on-failure
 
