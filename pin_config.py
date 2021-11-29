@@ -15,4 +15,5 @@ PM_SENSOR_SET           = 12
 PM_SENSOR_RESET         = 25
 
 # --- PWM signal output
-PWM1_CHANNEL            = 13
+PWM1_CHANNEL1           = 13
+PWM1_CHANNEL2           = 26

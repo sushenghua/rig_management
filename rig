@@ -36,7 +36,8 @@ parser.add_argument('-th', '--temphumid', help=temp_humid_arghelp)
 
 # --- fan pwm
 fan_pwm_arghelp = 'set fan speed by pwm percentage value, valid value: percentage value in range [0, 100]'
-parser.add_argument('-fp', '--fanpwm', type=int, help=fan_pwm_arghelp)
+parser.add_argument('-fp1', '--fanpwm1', type=int, help=fan_pwm_arghelp)
+parser.add_argument('-fp2', '--fanpwm2', type=int, help=fan_pwm_arghelp)
 
 # --- i2c bus
 i2c_bus_arghelp = 'i2c bus operation, valid value: reset'
@@ -112,11 +113,18 @@ else:
       print(temp_humid_arghelp)
 
   # ------ fan pwm
-  if args.fanpwm:
-    if args.fanpwm >= 0 and args.fanpwm <=100:
-      control.set_pwm(args.fanpwm/100.0)
+  if args.fanpwm1:
+    if args.fanpwm1 >= 0 and args.fanpwm1 <=100:
+      control.set_pwm1(args.fanpwm1/100.0)
     else:
       print(fan_pwm_arghelp)
+
+  if args.fanpwm2:
+    if args.fanpwm2 >= 0 and args.fanpwm2 <=100:
+      control.set_pwm2(args.fanpwm2/100.0)
+    else:
+      print(fan_pwm_arghelp)
+
 
   # ------ i2c bus
   if args.i2cbus:

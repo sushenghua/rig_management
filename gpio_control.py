@@ -11,7 +11,8 @@ pi.set_mode(PIN.USB_PLUG, PiGpio.OUTPUT)
 pi.set_mode(PIN.POWER_BUTTON, PiGpio.OUTPUT)
 pi.set_mode(PIN.PM_SENSOR_SET, PiGpio.OUTPUT)
 pi.set_mode(PIN.PM_SENSOR_RESET, PiGpio.OUTPUT)
-pi.set_mode(PIN.PWM1_CHANNEL, PiGpio.OUTPUT)
+pi.set_mode(PIN.PWM1_CHANNEL1, PiGpio.OUTPUT)
+pi.set_mode(PIN.PWM1_CHANNEL2, PiGpio.OUTPUT)
 
 # pi.set_mode(PIN.PWM1_CHANNEL, PiGpio.INPUT)
 # pi.set_pull_up_down(PIN.PWM1_CHANNEL, PiGpio.PULLDOWN)
@@ -41,7 +42,13 @@ def pm_sensor_reset():
   time.sleep(0.1)
   pi.write(PIN.PM_SENSOR_RESET, PiGpio.LEVEL_HIGH)
 
-def set_pwm(dutycycle, frequency=23400):
+def _set_pwm(channel_pin, dutycycle, frequency=23400):
   dutycycle = 0 if dutycycle < 0 else 1.0 if dutycycle > 1.0 else dutycycle
-  pi.set_PWM_frequency(PIN.PWM1_CHANNEL, frequency)
-  pi.set_PWM_dutycycle(PIN.PWM1_CHANNEL, 255*dutycycle)
+  pi.set_PWM_frequency(channel_pin, frequency)
+  pi.set_PWM_dutycycle(channel_pin, 255*dutycycle)
+
+def set_pwm1(dutycycle, frequency=23400):
+  _set_pwm(PIN.PWM1_CHANNEL1, dutycycle, frequency)
+
+def set_pwm2(dutycycle, frequency=23400):
+  _set_pwm(PIN.PWM1_CHANNEL2, dutycycle, frequency)
