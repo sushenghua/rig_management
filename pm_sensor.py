@@ -166,9 +166,14 @@ class PMSensor():
     pi.set_mode(self._pin_set, PiGpio.OUTPUT)
     pi.set_mode(self._pin_reset, PiGpio.OUTPUT)
 
-    self._serial_open()
-    # self._run_mode = ''
-    # self._read_mode = ''
+    try:
+      self._serial_open()
+      # self._run_mode = ''
+      # self._read_mode = ''
+    except Exception as e:
+      print(e)
+    finally:
+      self._serial_close()
 
     self.wakeup()
     # self.reset()

@@ -5,7 +5,7 @@ After=pigpio.service
 [Service]
 User=ubuntu
 
-ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/riginit.py > /home/ubuntu/service/rig/riginit.log 2>&1
+ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/rig_init.py > /home/ubuntu/service/rig/rig_init.log 2>&1
 
 #ExecStart=/usr/bin/python3 /home/ubuntu/service/rig -pm wakeup
 #ExecStartPost=/bin/sleep 0.3
