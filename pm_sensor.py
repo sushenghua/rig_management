@@ -172,8 +172,9 @@ class PMSensor():
       # self._read_mode = ''
     except Exception as e:
       print(e)
-    finally:
       self._serial_close()
+    finally:
+      pass
 
     self.wakeup()
     # self.reset()
@@ -201,10 +202,10 @@ class PMSensor():
       ret = self._read()
     except Exception as e:
       print(e)
+      self._serial_close()
     else:
       pass
     finally:
-      self._serial_close()
       return ret
 
   def read(self):
@@ -213,10 +214,10 @@ class PMSensor():
       ret = self._read()
     except Exception as e:
       print(e)
+      self._serial_close()
     else:
       pass
     finally:
-      self._serial_close()
       return ret
 
   # ------------ private ------------
