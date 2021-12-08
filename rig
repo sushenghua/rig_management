@@ -95,9 +95,10 @@ else:
       th_ps_pm = load_redis_cache()
       if th_ps_pm is not None:
         s = pwrlight.to_str(th_ps_pm['ps'])
+        print('[cache]', s)
       else:
         _, s = pwrlight.read_light()
-      print(s)
+        print(s)
     else:
       print(powerstatus_arghelp)
 
@@ -122,7 +123,7 @@ else:
       th_ps_pm = load_redis_cache()
       if th_ps_pm is not None:
         result = pm.to_str(th_ps_pm['pm'])
-        print(result)
+        print('[cache]', result)
       else:
         pms = pm.PMSensor.instance()
         try:
@@ -151,7 +152,7 @@ else:
       th_ps_pm = load_redis_cache()
       if th_ps_pm is not None:
         result = sht3x.to_str(th_ps_pm['th'])
-        print(result)
+        print('[cache]\n' + result)
       else:
         result_str = sht3x.read_all()
         print(result_str)
