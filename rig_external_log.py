@@ -65,7 +65,7 @@ def load_raw():
   finally:
     pass
 
-  time.sleep(0.2)
+  time.sleep(0.1)
   # --- power status
   ps = None
   try:
@@ -78,7 +78,7 @@ def load_raw():
   finally:
     pass
 
-  time.sleep(0.2)
+  time.sleep(0.1)
   # --- pm data
   pm = None
   try:
@@ -121,7 +121,7 @@ def log_beat():
   time_to_beat = BEAT_PERIOD
   try:
     msg = load_raw()
-    print(msg)
+    # print(msg)
 
     # --- json format msg
     jsonmsg = json.dumps(msg)
@@ -171,7 +171,7 @@ def cache_host_info():
     'errkey':   _err_key(),
     'beatkey':  _beat_key()
   }
-  print(info)
+  # print(info)
   r.set('rigexinfo', json.dumps(info))
 
 
