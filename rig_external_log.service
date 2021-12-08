@@ -1,0 +1,14 @@
+[Unit]
+Description=Rig Monitor Service
+After=riginit.service
+
+[Service]
+User=ubuntu
+
+ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/rig_external_log.py > /home/ubuntu/service/rig/rig_external_log.log 2>&1
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
