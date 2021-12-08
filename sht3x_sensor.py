@@ -7,7 +7,7 @@ import time
 # --- I2C bus
 # I2C_BUS_CHANNEL = 1
 # i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
-i2c_switch_bus = I2CSwitchBus()
+i2c_switch_bus = I2CSwitchBus.instance()
 # --- SHT3x sensor1
 SHT3x_1_ADDR              = 0x0144
 SHT3x_2_ADDR              = 0x0244
@@ -69,6 +69,13 @@ def read_all():
   _,_,_, down = read_sht3x(SHT3x_2_ADDR)
   return ''.join(['[up stream]  ', up, '\n',
                   '[down strem] ', down])
+
+def _th_str(t, h):
+  return ''.join(['temperature: %.2f C' % t, ', humidity: %.2f%%' % h])
+
+def to_str(data):
+  return ''.join([ '[up stream]  ', _th_str(data['up']['t'], data['up']['h']), '\n',
+                   '[down strem] ', _th_str(data['down']['t'], data['down']['h']) ])
 
 def read_dict_data():
   t1, _, h1, _ = read_upstream()

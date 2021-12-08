@@ -29,11 +29,23 @@ SWITCH_SET_CHANNEL_WAIT_TIME  = 0.02
 # ------------------ methods
 
 class I2CSwitchBus():
+
+  __instance = None
+
+  def instance():
+    if I2CSwitchBus.__instance == None:
+      I2CSwitchBus()
+    return I2CSwitchBus.__instance
+
   def __init__(self):
-    self.switch_reset()
-    self._recent_channel_bitmask = 0x00
-    i2c_bus.write_byte(SWITCH_ADDRESS, 0x00)
-    time.sleep(SWITCH_SET_CHANNEL_WAIT_TIME)
+    if I2CSwitchBus.__instance == None:
+      self.switch_reset()
+      self._recent_channel_bitmask = 0x00
+      i2c_bus.write_byte(SWITCH_ADDRESS, 0x00)
+      time.sleep(SWITCH_SET_CHANNEL_WAIT_TIME)
+      I2CSwitchBus.__instance = self
+    else:
+      raise Exception('try to initialize multiple instance of a singleton')
 
   # --- set bitwise channel
   def set_switch_bitwise_channel(self, channel_bitmask):

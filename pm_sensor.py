@@ -85,7 +85,7 @@ class PMSensorData():
 
 
 #--------------------------------------------------------------------
-# ------------------ invalid pm data
+# ------------------ pm data method
 INVALID_VAL = -999
 def invalid_pm_dict_data():
   return {
@@ -104,6 +104,26 @@ def invalid_pm_dict_data():
     }
   }
 
+
+def to_str(data):
+  return """
+    PM1.0 ug/m3 (ultrafine particles):                             {}
+    PM2.5 ug/m3 (combustion particles, organic compounds, metals): {}
+    PM10  ug/m3 (dust, pollen, mould spores):                      {}
+    PM1.0 ug/m3 (atmos env):                                       {}
+    PM2.5 ug/m3 (atmos env):                                       {}
+    PM10  ug/m3 (atmos env):                                       {}
+    > 0.3um in 100ml air:                                          {}
+    > 0.5um in 100ml air:                                          {}
+    > 1.0um in 100ml air:                                          {}
+    > 2.5um in 100mL air:                                          {}
+    > 5.0um in 100ml air:                                          {}
+    >10.0um in 100ml air:                                          {}
+    """.format(data['ugpm3']['1d0'], data['ugpm3']['2d5'], data['ugpm3']['10d'],
+               data['ugpm3']['1d0'], data['ugpm3']['2d5'], data['ugpm3']['10d'],
+               data['ctp100']['0d3'], data['ctp100']['0d5'], data['ctp100']['1d0'],
+               data['ctp100']['2d5'], data['ctp100']['5d0'], data['ctp100']['10d'],
+               )
 
 #--------------------------------------------------------------------
 # ------------------ exception classes
@@ -167,12 +187,12 @@ class PMSensor():
     pi.set_mode(self._pin_reset, PiGpio.OUTPUT)
 
     try:
-      self._serial_open()
+      self.serial_open()
       # self._run_mode = ''
       # self._read_mode = ''
     except Exception as e:
       print(e)
-      self._serial_close()
+      self.serial_close()
     finally:
       pass
 
@@ -189,6 +209,9 @@ class PMSensor():
     time.sleep(0.1)
     pi.write(self._pin_reset, PiGpio.LEVEL_HIGH)
 
+  def release_resource(self):
+    self.serial_close()
+
   def set_active_read_mode(self):
     self._set_read_mode('active_mode')
 
@@ -202,35 +225,36 @@ class PMSensor():
       ret = self._read()
     except Exception as e:
       print(e)
-      self._serial_close()
+      self.serial_close()
     else:
       pass
     finally:
       return ret
 
   def read(self):
-    ret = None
-    try:
-      ret = self._read()
-    except Exception as e:
-      print(e)
-      self._serial_close()
-    else:
-      pass
-    finally:
-      return ret
+    return self._read()
+    # ret = None
+    # try:
+    #   ret = self._read()
+    # except Exception as e:
+    #   print(e)
+    #   self.serial_close()
+    # else:
+    #   pass
+    # finally:
+    #   return ret
 
-  # ------------ private ------------
-  def _serial_open(self):
+  def serial_open(self):
     if self._serial is not None:
       pi.serial_close(self._serial)
     self._serial= pi.serial_open(self._device, self._baudrate, 0)
 
-  def _serial_close(self):
+  def serial_close(self):
     if self._serial is not None:
       pi.serial_close(self._serial)
       self._serial = None
 
+  # ------------ private ------------
   def _serial_read(self, count):
     b, d = pi.serial_read(self._serial, count)
     return b, d

@@ -9,6 +9,33 @@ from i2c_switch_bus import I2CSwitchBus
 import argparse
 import sys
 
+import json
+import redis
+
+import warnings
+warnings.filterwarnings('ignore')
+
+#--------------------------------------------------------------------
+# ------------------ redis
+REDIS_SERVER_HOST = '127.0.0.1'
+REDIS_SERVER_PORT = 6379
+REDIS_SERVER_PASS = 'rigConnection@ip64'
+r = redis.StrictRedis(host=REDIS_SERVER_HOST, port=REDIS_SERVER_PORT,
+                      db=0, password=REDIS_SERVER_PASS)
+
+def load_redis_cache():
+  try:
+    if r.exists('th_ps_pm') > 0:
+      th_ps_pm = json.loads(r.get('th_ps_pm'))
+      # print(th_ps_pm)
+    else:
+      # print('no key: "th_ps_pm" found in cache')
+      th_ps_pm = None
+  except Exception as e:
+    print('rig cmd redis err: ', e)
+    th_ps_pm = None
+  finally:
+    return th_ps_pm
 
 #--------------------------------------------------------------------
 # ------------------ arguments
@@ -65,7 +92,11 @@ else:
   # ------ power status
   if args.powerstatus:
     if args.powerstatus == 'read':
-      _, s = pwrlight.read_light()
+      th_ps_pm = load_redis_cache()
+      if th_ps_pm is not None:
+        s = pwrlight.to_str(th_ps_pm['ps'])
+      else:
+        _, s = pwrlight.read_light()
       print(s)
     else:
       print(powerstatus_arghelp)
@@ -88,9 +119,19 @@ else:
     elif args.pmsensor == 'reset':
       control.pm_sensor_reset()
     elif args.pmsensor == 'read':
-      pms = pm.PMSensor.instance()
-      data = pms.read()
-      print(data)
+      th_ps_pm = load_redis_cache()
+      if th_ps_pm is not None:
+        result = pm.to_str(th_ps_pm['pm'])
+        print(result)
+      else:
+        pms = pm.PMSensor.instance()
+        try:
+          data = pms.read()
+          print(data)
+        except Exception as e:
+          print(e)
+        finally:
+          pms.release_resource()
     elif args.pmsensor == 'pread':
       pms = pm.PMSensor.instance()
       data = pms.passive_read()
@@ -107,8 +148,13 @@ else:
   # ------ temperature humidity sensor control
   if args.temphumid:
     if args.temphumid == 'read':
-      result_str = sht3x.read_all()
-      print(result_str)
+      th_ps_pm = load_redis_cache()
+      if th_ps_pm is not None:
+        result = sht3x.to_str(th_ps_pm['th'])
+        print(result)
+      else:
+        result_str = sht3x.read_all()
+        print(result_str)
     else:
       print(temp_humid_arghelp)
 
@@ -128,7 +174,7 @@ else:
   # ------ i2c bus
   if args.i2cbus:
     if args.i2cbus == 'reset':
-      i2c_bus = I2CSwitchBus()
+      i2c_bus = I2CSwitchBus.instance()
       i2c_bus.switch_reset()
     else:
       print(i2c_bus_arghelp)

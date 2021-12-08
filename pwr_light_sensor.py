@@ -7,7 +7,7 @@ import time
 # --- I2C bus
 # I2C_BUS_CHANNEL = 1
 # i2c_bus = smbus2.SMBus(I2C_BUS_CHANNEL)
-i2c_switch_bus = I2CSwitchBus()
+i2c_switch_bus = I2CSwitchBus.instance()
 # --- TSL2561 sensor
 TSL2561_3_ADDR              = 0x0439
 TSL2561_RESPONSE_WAIT_TIME  = 0.05
@@ -49,6 +49,9 @@ def read_light():
   ison = read_tsl2561(TSL2561_3_ADDR)
   result_str = 'on' if ison else 'off'
   return ison, result_str
+
+def to_str(on):
+  return 'on' if on else 'off'
 
 def ison():
   return read_tsl2561(TSL2561_3_ADDR)
