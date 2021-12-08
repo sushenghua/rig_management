@@ -1,1 +1,1 @@
-sudo journalctl -u riginit.service
+sudo journalctl -u rig_monitor.service
