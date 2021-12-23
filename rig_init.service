@@ -7,6 +7,9 @@ User=ubuntu
 
 ExecStart=/usr/bin/python3 /home/ubuntu/service/rig/rig_init.py > /home/ubuntu/service/rig/rig_init.log 2>&1
 
+# turn off wifi
+ExecStartPost=/usr/sbin/ifconfig wlan0 down
+
 #ExecStart=/usr/bin/python3 /home/ubuntu/service/rig -pm wakeup
 #ExecStartPost=/bin/sleep 0.3
 #ExecStartPost=/usr/bin/python3 /home/ubuntu/service/rig -pm reset
