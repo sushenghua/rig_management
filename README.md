@@ -15,5 +15,7 @@ The project uses a Raspberry PI board with an Ubuntu system to monitor data from
 - rig remote control ([frp](https://github.com/fatedier/frp) used)
 - IFTTT Push Notification on abnormal events
 
-### example
-
+### examples
+<img src="doc/img/img1.png" width="500">
+<img src="doc/img/img2.png" width="500">
+<img src="doc/img/img3.png" width="500">
